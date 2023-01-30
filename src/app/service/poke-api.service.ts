@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 //Observable
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,15 @@ export class PokeApiService {
     return this.http.get<any>(this.url).pipe(
       tap(res => res),
       tap(res => {
-        console.log(res)
+        res.results.map( (resPokemons: any) =>{
+          this.http.get<any>(resPokemons.url).pipe(
+            map(
+              res => {
+                resPokemons.status = res;
+              }
+            )
+          )
+        } )
       })
     );
   }
